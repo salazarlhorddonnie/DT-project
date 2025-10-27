@@ -1,3 +1,4 @@
+
 import pygame as py
 from sys import exit
 from Game_surface import Button
@@ -23,11 +24,11 @@ def main():
 
             if event.type == py.MOUSEBUTTONDOWN:
                 if play_button.is_clicked(event.pos):
-                    print("Play button clicked!")
+                    print("welcome to sequence")
 
-        screen.fill((30, 30, 30))
+        screen.fill(('Blue'))
         play_button.draw(screen)
-        py.display.flip()
+        py.display.flip()        
         clock.tick(60)
 
     py.quit()
