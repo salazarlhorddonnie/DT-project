@@ -12,4 +12,4 @@ class menu():
             self.game.resetkeys()
 
 class MainMenu(menu):
-    
+    self.runDisplay = True

@@ -4,4 +4,4 @@ g = Game()
 
 while g.running:
     g.playing = True
-    g.gameloop() 
+    g.gameloop()
