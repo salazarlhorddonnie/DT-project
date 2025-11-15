@@ -13,7 +13,13 @@ class Game():
         
         self.font_name = pygame.font.get_default_font()
         self.black, self.white, self.gray = (0, 0, 0), (255, 255, 255), (150, 150, 150)
-        self.button_rect = pygame.Rect(410, 350, 200, 60)
+        # buttons: list of dicts {id, text, rect, color}
+        self.buttons = []
+        # add default buttons (x, y, width, height)
+        self.add_button('PLAY', 410, 250, 200, 60, id='play')
+        self.add_button('OPTIONS', 410, 330, 200, 60, id='options')
+        self.add_button('CREDITS', 410, 410, 200, 60, id='credits')
+        self.add_button('QUIT', 410, 490, 200, 60, id='quit')
 
     def gameloop(self):
         while self.playing:
@@ -25,8 +31,7 @@ class Game():
             self.display.fill(self.black)
 
             self.drawText('Sequence', 50, self.DISPLAY_W/2, self.DISPLAY_H/2 -100)
-            pygame.draw.rect(self.display, self.gray, self.button_rect)
-            self.drawText('PLAY', 30, self.button_rect.centerx, self.button_rect.centery)
+            self.draw_buttons()
 
             self.window.blit(self.display, (0, 0))
             pygame.display.update()
@@ -38,9 +43,10 @@ class Game():
                 self.running, self.playing = False, False
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if self.button_rect.collidepoint(event.pos):
-                    print("Button clicked!")
-                    self.startKey = True  # Example: make it stop the loop or start game
+                for btn in self.buttons:
+                    if btn['rect'].collidepoint(event.pos):
+                        self.handle_button_click(btn['id'])
+                        break
 
     def resetkeys(self):
         self.upKey, self.downKey, self.startKey, self.backKey = False, False, False, False
@@ -50,3 +56,65 @@ class Game():
         textSurface = font.render(text, True, self.white)
         textRect = textSurface.get_rect(center=(x, y))
         self.display.blit(textSurface, textRect)
+
+    # Helper: add a button definition
+    def add_button(self, text, x, y, w, h, id=None, color=None):
+        rect = pygame.Rect(x, y, w, h)
+        self.buttons.append({
+            'id': id or text.lower(),
+            'text': text,
+            'rect': rect,
+            'color': color or self.gray
+        })
+
+    # Draw all buttons
+    def draw_buttons(self):
+        for btn in self.buttons:
+            pygame.draw.rect(self.display, btn['color'], btn['rect'])
+            self.drawText(btn['text'], 30, btn['rect'].centerx, btn['rect'].centery)
+
+    # Map button ids to behavior
+    def handle_button_click(self, btn_id):
+        if btn_id == 'play':
+            print('Play clicked')
+            self.startKey = True
+        elif btn_id == 'options':
+            print('Options clicked')
+            # set a flag or open options menu
+        elif btn_id == 'credits':
+            # show credits screen implemented inside Game (not in Game_surface)
+            self.show_credits()
+        elif btn_id == 'quit':
+            print('Quit clicked')
+            self.running, self.playing = False, False
+
+    # Credits screen shown from Game_states (runs its own loop until a key or click)
+    def show_credits(self):
+        credits_lines = [
+            "CREDITS",
+            "Lead Developer: Salazar, Lhord Donnie",
+            "Developer: Tulabing, Joeross",
+            "Design: Donaldo, Jan Rafael",
+            "Thanks for playing!",
+            "(Click or press any key to return)"
+        ]
+
+        run = True
+        while run and self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                    run = False
+                elif event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN):
+                    run = False
+
+            self.display.fill(self.black)
+            # title + lines
+            self.drawText(credits_lines[0], 48, self.DISPLAY_W/2, self.DISPLAY_H/2 - 140)
+            for i, line in enumerate(credits_lines[1:], start=1):
+                y = self.DISPLAY_H/2 - 80 + (i-1) * 40
+                self.drawText(line, 28, self.DISPLAY_W/2, y)
+
+            self.window.blit(self.display, (0, 0))
+            pygame.display.update()
+            self.resetkeys()
