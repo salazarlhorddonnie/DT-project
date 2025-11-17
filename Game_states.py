@@ -1,6 +1,9 @@
 import pygame
+from In_Game import InGame
 
-class Game():
+g = InGame()
+
+class States():
     def __init__(self):
         pygame.init()
 
@@ -76,25 +79,23 @@ class Game():
     # Map button ids to behavior
     def handle_button_click(self, btn_id):
         if btn_id == 'play':
-            print('Play clicked')
             self.startKey = True
+            g.GameUI()
         elif btn_id == 'options':
             print('Options clicked')
             # set a flag or open options menu
         elif btn_id == 'credits':
-            # show credits screen implemented inside Game (not in Game_surface)
             self.show_credits()
         elif btn_id == 'quit':
             print('Quit clicked')
             self.running, self.playing = False, False
 
-    # Credits screen shown from Game_states (runs its own loop until a key or click)
     def show_credits(self):
         credits_lines = [
             "CREDITS",
             "Lead Developer: Salazar, Lhord Donnie",
             "Developer: Tulabing, Joeross",
-            "Design: Donaldo, Jan Rafael",
+            "Design: Donaldo, Jan Rafael & Quirol, Renier",
             "Thanks for playing!",
             "(Click or press any key to return)"
         ]

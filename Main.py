@@ -1,6 +1,6 @@
-from Game_states import Game
+from Game_states import States
 
-g = Game()
+g = States()
 
 while g.running:
     g.playing = True
