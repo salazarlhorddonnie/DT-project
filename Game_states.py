@@ -82,8 +82,7 @@ class States():
             self.startKey = True
             g.GameUI()
         elif btn_id == 'options':
-            print('Options clicked')
-            # set a flag or open options menu
+            self.show_options()
         elif btn_id == 'credits':
             self.show_credits()
         elif btn_id == 'quit':
@@ -115,6 +114,47 @@ class States():
             for i, line in enumerate(credits_lines[1:], start=1):
                 y = self.DISPLAY_H/2 - 80 + (i-1) * 40
                 self.drawText(line, 28, self.DISPLAY_W/2, y)
+
+            self.window.blit(self.display, (0, 0))
+            pygame.display.update()
+            self.resetkeys()
+
+    def show_options(self):
+        btn_w, btn_h = 300, 60
+        x = (self.DISPLAY_W - btn_w) // 2
+        y_full = self.DISPLAY_H // 2 - 60
+        y_win = y_full + 90
+
+        fullscreen_rect = pygame.Rect(x, y_full, btn_w, btn_h)
+        windowed_rect = pygame.Rect(x, y_win, btn_w, btn_h)
+
+        run = True
+        while run and self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                    run = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        run = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if fullscreen_rect.collidepoint(event.pos):
+                        self.window = pygame.display.set_mode(
+                            (self.DISPLAY_W, self.DISPLAY_H), pygame.FULLSCREEN
+                        )
+                    elif windowed_rect.collidepoint(event.pos):
+                        self.window = pygame.display.set_mode(
+                            (self.DISPLAY_W, self.DISPLAY_H)
+                        )
+
+            self.display.fill(self.black)
+            self.drawText("OPTIONS", 48, self.DISPLAY_W/2, self.DISPLAY_H/2 - 160)
+
+            pygame.draw.rect(self.display, self.gray, fullscreen_rect)
+            pygame.draw.rect(self.display, self.gray, windowed_rect)
+
+            self.drawText("Fullscreen", 30, fullscreen_rect.centerx, fullscreen_rect.centery)
+            self.drawText("Windowed", 30, windowed_rect.centerx, windowed_rect.centery)
 
             self.window.blit(self.display, (0, 0))
             pygame.display.update()
